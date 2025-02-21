@@ -1,0 +1,24 @@
+# Ignore nohup.out file
+nohup.out
+
+# Ignore Python cache directories
+__pycache__/
+
+# Ignore specific cache directories
+config/__pycache__/
+datasets/__pycache__/
+model/__pycache__/
+modules/__pycache__/
+trainer/__pycache__/
+utils/__pycache__/
+
+# Ignore specific datasets
+datasets/ActivityNet
+datasets/msrvtt_data
+
+# Ignore specific directories
+final_frame_attention_vis
+attention_vis
+test
+outputs
+openai/clip-vit-base-patch32
