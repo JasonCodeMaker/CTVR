@@ -1,4 +1,4 @@
-# Continual Learning for Video-Text Retrieval Benchmark
+# Continual Text-to-Video Retrieval
 
 ## Content
 
