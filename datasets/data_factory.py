@@ -1,4 +1,3 @@
-from config.base_config import BaseConfig
 from torch.utils.data import DataLoader
 
 class DataFactory:

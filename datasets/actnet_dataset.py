@@ -1,7 +1,6 @@
 import os
 from modules.basic_utils import load_json
 from torch.utils.data import Dataset
-from config.base_config import Config
 from datasets.video_capture import VideoCapture
 
 
@@ -12,10 +11,10 @@ class ACTNETDataset(Dataset):
         split_type: 'train'/'test'
         img_transforms: Composition of transforms
     """
-    def __init__(self, config: Config, data, model, split_type = 'train', img_transforms=None):
+    def __init__(self, config, data, model, split_type = 'train', img_transforms=None):
         self.config = config
-        self.videos_train_dir = config.videos_train_dir
-        self.videos_val_dir = config.videos_val_dir
+        self.videos_train_dir = os.join(config.videos_dir, 'train')
+        self.videos_val_dir = os.join(config.videos_dir, 'val')
         self.img_transforms = img_transforms
         self.data = data
         self.split_type = split_type

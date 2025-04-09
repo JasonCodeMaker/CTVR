@@ -22,3 +22,11 @@ attention_vis
 test
 outputs
 openai/clip-vit-base-patch32
+
+# Ignore specific files
+Autoencoder
+config
+data
+
+
+datasets_old

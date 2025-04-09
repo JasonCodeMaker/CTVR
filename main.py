@@ -12,7 +12,7 @@ def main():
     config = ConfigFactory.get_config()
     config.print_config()
     
-    # 2. Initialize CometML experiment
+    # 2. Initialize CometML experiment (optional)
     experiment = initialize_experiment(config)
     experiment.set_name(config.exp_name)
     
@@ -25,7 +25,7 @@ def main():
     
     # 5. Initialize model(s)
     model = ModelFactory.get_model(config)
-    ref_model = ModelFactory.get_model(config)
+    ref_model = ModelFactory.get_model(config) # If the CL method needs a reference model
     
     # 6. Prepare continual learning dataset handlers
     train_cil = CILSetTask(data['train'], model, 'train', config.dataset_name, config)
@@ -37,7 +37,7 @@ def main():
         run_evaluation(config, model, val_cil, experiment, evaluator_cls)
     else:
         trainer_cls = MethodFactory.get_trainer(config)
-        current_task = 2
+        current_task = 1
         run_training(current_task, config, ref_model, model, train_cil, val_cil, experiment, trainer_cls)
 
 if __name__ == '__main__':
