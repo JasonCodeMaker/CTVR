@@ -1,35 +1,217 @@
-# Continual Text-to-Video Retrieval
+# Continual Text-to-Video Retrieval with Frame Fusion and Task-Aware Routing
 
-## Content
+[![Conference](https://img.shields.io/badge/Conference-SIGIR%202025-blue)](https://sigir2025.dei.unipd.it/) [![arXiv](https://img.shields.io/badge/arXiv-2503.10111-b31b1b.svg)](https://arxiv.org/abs/2503.10111)
 
-- [Prerequisites](#prerequisites)
-- [Dataset](#dataset)
-- [Usage](#usage)
+
+This repository contains the official implementation of our SIGIR 2025 paper: "[Continual Text-to-Video Retrieval with Frame Fusion and Task-Aware Routing]()".
+
+![FrameFusionMoE Architecture](assets/Architecture.png){width=1300}
+
+## Table of Contents
+- [Overview](#overview)
+- [Installation](#installation)
+- [Data Preparation](#data-preparation)
+- [FrameFusionMoE Model](#framefusionmoe-model)
+- [CTVR Benchmark](#ctvr-benchmark)
+- [Baseline Models](#baseline-models)
+- [Results](#results)
+- [Project Structure](#project-structure)
 - [Citation](#citation)
+- [Acknowledgments](#acknowledgments)
 
-## Prerequisites
+## Overview
 
-It is essential to install all the dependencies and libraries needed to run the project. To this end, you need to run this line: 
+This repository provides two main components:
 
-## Dataset
+### 1. FrameFusionMoE Model
 
-We provide the metadata for each Video Continual Learning (CL) setup proposed in this benchmark. This metadata contains the data subsets corresponding to the set of tasks of each CL setup.  However, you have to download the video datasets required by the proposed CL setups and extract the frames of videos. 
+FrameFusionMoE is our solution to the CTVR challenge, designed to:
 
-### Data
-#### MSRVTT
-- MSRVTT-10
-- MSRVTT-20
+- Adapt to new video categories without forgetting previously learned ones
+- Maintain high retrieval performance across all learned categories
+- Operate efficiently in a practical scenario where video features are stored in a database
 
-#### ActivityNet
-- ACTNET-10
-- ACTNET-20
+#### Key Components:
 
-## Usage
+- **Frame Fusion Adapter**: Processes video frames while preserving compatibility with CLIP
+- **Task-Aware Mixture-of-Experts**: Routes queries to appropriate experts based on content
+- **Cross-Task Loss**: Prevents forgetting by maintaining alignments for previous tasks
 
-The configuration file must be created or modified according to the provided examples, the code path, your particular requirements, and the selected setup.
+### 2. Continual Text-to-Video Retrieval (CTVR) Benchmark
 
+The CTVR benchmark is the first standardized environment for evaluating how video retrieval systems adapt to new video content over time. It features:
+
+- Task sequences with 10 or 20 distinct categories on MSRVTT and ActivityNet datasets
+- Support for diverse baseline methods (TVR and CL approaches)
+
+## Installation
+
+```bash
+# Create a new conda environment
+conda create -n framefusionmoe python=3.8
+conda activate framefusionmoe
+
+# Install PyTorch with CUDA
+conda install pytorch==1.10.0 torchvision==0.11.0 cudatoolkit=11.3 -c pytorch
+
+# Install other dependencies
+pip install ftfy regex tqdm opencv-python pandas matplotlib scikit-learn transformers==4.18.0
+```
+
+## Data Preparation
+
+### MSRVTT Dataset
+
+```bash
+# Download MSRVTT data
+wget https://www.robots.ox.ac.uk/~maxbain/frozen-in-time/data/MSRVTT.zip
+unzip MSRVTT.zip -d datasets/MSRVTT
+
+# Process video frames
+python datasets/utils/process_msrvtt.py
+```
+
+### ActivityNet Dataset
+
+```bash
+# Download ActivityNet data from official website
+# http://activity-net.org/download.html
+
+# Place videos in datasets/ACTNET/Activity_Videos
+# Process video clips
+python datasets/utils/process_actnet.py
+```
+
+### CTVR Dataset Configuration
+
+Each CTVR setup distributes categories uniformly across tasks:
+
+| Setup | Dataset | #Tasks | Categories per Task |
+|-------|---------|--------|---------------------|
+| MSRVTT-10 | MSRVTT | 10 | 2 |
+| MSRVTT-20 | MSRVTT | 20 | 1 |
+| ACTNET-10 | ActivityNet | 10 | 20 |
+| ACTNET-20 | ActivityNet | 20 | 10 |
+
+## FrameFusionMoE Model
+
+Train and evaluate FrameFusionMoE using the main.py script:
+
+```bash
+# Train FrameFusionMoE on MSRVTT with 10 tasks
+python main.py \
+  --config="configs/framefusion_moe.yaml" \
+  --arch=frame_fusion_moe \
+  --dataset_name msrvtt \
+  --do_train \
+  --num_tasks 10 \
+
+# Train FrameFusionMoE on ActivityNet with 10 tasks
+python main.py \
+  --config="configs/framefusion_moe.yaml" \
+  --arch=frame_fusion_moe \
+  --dataset_name actnet \
+  --do_train \
+  --num_tasks 10 \
+```
+
+## CTVR Benchmark
+
+> **TODO**: This section will be updated with detailed instructions for running the benchmark.
+
+![CTVR Pipeline](assets/BenchmarkOutline.png){width=1000}
+
+*Illustration of Continual Text-to-Video Retrieval (CTVR) pipeline. A Pre-Trained Model (PTM) continuously adapts to a sequence of TVR tasks through continual learning. Video features extracted in the current task are stored in a database and leveraged for subsequent tasks.*
+
+## Baseline Models
+
+The following baseline models are included for comparison:
+
+```bash
+# Train baseline models (e.g., CLIP4Clip/AvgPool)
+ToDO: Add commands for training baseline models
+```
+
+### Available Models
+
+The following models can be specified using the `--model` parameter:
+
+ToDO: Add available models
+
+### Dataset Options
+
+- `--dataset_name msrvtt`: MSRVTT dataset
+- `--dataset_name actnet`: ActivityNet dataset
+- `--num_tasks [10|20]`: Number of sequential tasks
+
+## Results
+
+### CTVR Benchmark Results
+
+
+#### MSRVTT Dataset (R@1)
+
+| Method | 10 Tasks↑ | BWF↓ | 20 Tasks↑ | BWF↓ | Params |
+| --- | --- | --- | --- | --- | --- |
+| Zero-Shot CLIP | 22.14 | 0.00 | 22.14 | 0.00 | 0.00M |
+| CLIP4Clip | 23.57 | 0.61 | 21.79 | 1.02 | 151.28M |
+| X-Pool | 19.60 | 0.28 | 15.98 | 1.37 | 152.59M |
+| CLIP-ViP | 21.56 | 0.49 | 19.74 | 0.73 | 151.29M |
+| LwF | 23.85 | 1.68 | 22.06 | 1.65 | 151.28M |
+| VR-LwF | 24.49 | 1.22 | 22.39 | 1.44 | 151.28M |
+| ZSCL | 23.99 | 0.10 | 21.47 | 0.91 | 151.28M |
+| MoE-Adapter | 22.92 | 0.14 | 22.70 | 0.01 | 59.80M |
+| **FrameFusionMoE (Ours)** | **25.87** | **-0.45** | **25.16** | **-0.70** | **46.80M** |
+
+#### ActivityNet Dataset (R@1)
+
+| Method | 10 Tasks↑ | BWF↓ | 20 Tasks↑ | BWF↓ | Params |
+| --- | --- | --- | --- | --- | --- |
+| Zero-Shot CLIP | 14.89 | 0.00 | 14.89 | 0.00 | 0.00M |
+| CLIP4Clip | 17.85 | 0.75 | 17.07 | 0.45 | 151.28M |
+| X-Pool | 17.99 | 0.37 | 16.57 | 0.31 | 152.59M |
+| CLIP-ViP | 17.01 | 0.56 | 16.02 | 0.73 | 151.29M |
+| LwF | 17.56 | 0.63 | 16.36 | 0.93 | 151.28M |
+| VR-LwF | 18.08 | 0.68 | 17.21 | 0.58 | 151.28M |
+| ZSCL | 17.67 | 0.35 | 16.83 | 0.70 | 151.28M |
+| MoE-Adapter | 16.63 | -0.15 | 15.77 | -0.01 | 59.80M |
+| **FrameFusionMoE (Ours)** | **18.21** | **-0.01** | **17.71** | **0.04** | **46.80M** |
+
+## Project Structure
+
+The project is organized as follows:
+
+```
+.
+├── config/                        # Configuration files
+├── data/                          # CTVR data 
+├── datasets/                      # Dataset management
+│   ├── ACTNET/                    # ActivityNet dataset
+│   │   ├── Activity_Clip_Frames/  
+│   │   └── Activity_Videos/
+│   ├── MSRVTT/                    # MSRVTT dataset
+│   │   ├── MSRVTT_Frames/         
+│   │   └── MSRVTT_Videos/
+│   └── utils/                     # Data preprocessing utilities
+├── evaluator/                     # Evaluation metrics and utilities
+├── model/                         # Model implementations
+├── modules/                       # Core modules
+├── outputs/                       # Results and model checkpoints
+├── scripts/                       # Training/Evulation scripts
+├── trainer/                       # Training management code
+├── main.py                        # Main entry point for training and evaluation
+```
 
 ## Citation
 
-If you find this repository useful for your research, please consider citing our paper:
+If you find our work useful, please consider citing our paper:
 
+```
+ToDO: Add citation information
+```
+
+## Acknowledgments
+
+Our work would not have been possible without these excellent open-source projects:
+- [XPool](https://github.com/layer6ai-labs/xpool)
+- [vCLIMB](https://github.com/ojedaf/vCLIMB_Benchmark)
