@@ -1,0 +1,34 @@
+# FrameFusionMoE specific configuration
+_base_: "default_config.yaml"
+
+arch: "frame_fusion_moe"
+clip_v_lr: 3e-6
+clip_t_lr: 3e-6
+noclip_lr: 1e-5
+num_frames: 12
+batch_size: 8
+project_name: "1-MSRVTT_10_FrameFusionMoE"
+dataset_name: "MSRVTT"
+videos_dir: "datasets/msrvtt_data/MSRVTT_Frames"
+benchmark: "cap"
+loss: "triplet"
+grad_acc_steps: 1
+max_num_epochs: 1
+evals_per_epoch: 1
+
+# FFA specific parameters
+adapter_applied_layer: 10
+
+# TAME specific parameters
+lora_r: 64
+lora_alpha: 256
+lora_nums: 10
+lora_dropout: 0.1
+topk: 2
+
+# Task Prototype specific parameters
+task_num: 10
+task_prototype: false
+
+# Cross-Task Loss specific parameters
+loss_scale: 0.6
