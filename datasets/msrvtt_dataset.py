@@ -9,7 +9,7 @@ from modules.tokenizer import clip_tokenizer
 from torch.utils.data import Dataset
 from datasets.video_capture import VideoCapture
 from transformers import CLIPModel
-from datasets.model_transforms import init_transform_dict
+from datasets.utils.model_transforms import init_transform_dict
 from datetime import timedelta
 import time
 
@@ -34,8 +34,8 @@ class MSRVTTDataset(Dataset):
         self.replayed_data = None
         self.auxiliary_pairs = None
         self.split_type = split_type
-        db_file = 'datasets/msrvtt_data/MSRVTT_data.json' 
-        test_csv = 'datasets/msrvtt_data/MSRVTT_CL_validation.csv'
+        db_file = 'datasets/MSRVTT/MSRVTT_data.json' 
+        test_csv = 'datasets/MSRVTT/MSRVTT_CL_validation.csv'
 
         self.db = load_json(db_file)
         if self.split_type == 'train':
@@ -49,12 +49,6 @@ class MSRVTTDataset(Dataset):
                     self.videos.extend(selected_videos)
 
             self._compute_vid2caption()
-            if self.config.image_feature:
-                self._construct_auxiliary_pairs()
-                self.auxiliary_pairs_length = len(self.auxiliary_pairs)
-                self.available_aux_indices = set(range(self.auxiliary_pairs_length))
-                self.used_aux_indices = set()
-
             self._construct_all_train_pairs()
 
             if replayed_pairs is not None:
@@ -78,15 +72,6 @@ class MSRVTTDataset(Dataset):
                 # Randomly select an index for auxiliary data
                 aux_index = self.get_next_auxiliary_index()
                 image, caption = self.get_auxiliary_pairs_by_index(aux_index)
-                return {
-                    'video_id': video_id,
-                    'video': frames,
-                    'text': text,
-                    'image': image,
-                    'caption': caption,
-                }
-            elif self.config.image_feature:
-                image, caption = self.auxiliary_pairs[index]
                 return {
                     'video_id': video_id,
                     'video': frames,
@@ -206,10 +191,7 @@ class MSRVTTDataset(Dataset):
         return aux_index
 
     def get_auxiliary_pairs_by_index(self, index):
-        if self.config.image_feature:
-            return self.auxiliary_pairs[index]
-        else:
-            return self.replayed_data[index]
+        return self.replayed_data[index]
 
     def set_replayed_data(self, replayed_data):
         self.replayed_data = replayed_data

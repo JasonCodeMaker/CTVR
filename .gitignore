@@ -25,7 +25,6 @@ openai/clip-vit-base-patch32
 
 # Ignore specific files
 Autoencoder
-config
 data
 
 

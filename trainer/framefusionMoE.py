@@ -8,7 +8,7 @@ import time
 
 from trainer.base_trainer import BaseTrainer
 from modules.optimization import AdamW
-from datasets.cached_video_dataset import ReferenceVideoDataset, RefDataIterator
+from datasets.utils.cached_video_dataset import ReferenceVideoDataset, RefDataIterator
 from modules.trainer_utils import log_training_progress, load_stored_embed, update_exp_result
 from evaluator.validator import Validator
 
@@ -87,17 +87,6 @@ class Trainer(BaseTrainer):
                 else:
                     if "lora" in name or "w_noise" in name or "task_prototype" in name:
                         param.requires_grad = True
-        
-        # Additional freezing based on a frozen list for tasks > 2
-        if self.config.frozen and self.current_task_id > 2:
-            frozen_path = os.path.join(self.config.model_path, "frozen_list_experts.txt")
-            if os.path.exists(frozen_path):
-                with open(frozen_path, "r") as file:
-                    lines = file.read().splitlines()
-                    frozen_list = list(set(lines))
-                for name, param in self.model.named_parameters():
-                    if name in frozen_list:
-                        param.requires_grad = False
 
     def _configure_optimizer(self):
         """
@@ -134,9 +123,9 @@ class Trainer(BaseTrainer):
                 clip_v_lr = 2e-5
                 noclip_lr = 2e-5
         else:
-            clip_t_lr = self.config.clip_t_lr
-            clip_v_lr = self.config.clip_v_lr
-            noclip_lr = self.config.noclip_lr
+            clip_t_lr = float(self.config.clip_t_lr)
+            clip_v_lr = float(self.config.clip_v_lr)
+            noclip_lr = float(self.config.noclip_lr)
         
         print(f"clip_text_LR: {clip_t_lr}, clip_vision_LR: {clip_v_lr}, noclip_LR: {noclip_lr}")
         

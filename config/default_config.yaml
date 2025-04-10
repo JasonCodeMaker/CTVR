@@ -7,7 +7,7 @@ eval_path: "outputs/debug"
 # Data parameters
 path_data: "data/MSRVTT_10_dataset.pkl"
 dataset_name: "MSRVTT"
-videos_dir: "datasets/msrvtt_data/MSRVTT_Videos" # "datasets/ActivityNet/Activity_Clip_Frames"
+videos_dir: "datasets/MSRVTT/MSRVTT_Frames" # "datasets/ACTNET/Activity_Clip_Frames"
 num_frames: 12
 video_sample_type: "uniform"
 input_res: 224
@@ -26,16 +26,8 @@ grad_acc_steps: 4
 training_type: "full_shot"
 num_shots: 16
 init_validation: true
-store_vid_embed: false
 load_best: true
 benchmark: "anet_cap"
-image_feature: false
-frame_reduction: -1
-
-# WISE-FT parameters
-wise_mode: "None"
-wise_strategy: "interpolation"
-wise_alpha: 0.5
 
 # Model parameters
 huggingface: true
@@ -62,21 +54,3 @@ transformer_dropout: 0.3
 # System parameters
 num_workers: 8
 seed: 42
-data_analysis: false
-
-# MoE Adapter parameters
-ffn_num: 64
-ffn_adapt: false
-ffn_option: "parallel"
-ffn_adapt_where: "AdapterDoubleEncoder"
-apply_moe: false
-repeat_train: false
-task_id: -1
-multi_experts: false
-num_experts: 22
-is_train: false
-frozen: false
-autorouter: false
-threshold: null
-non_text: false
-frozen_path: "frozen_list"

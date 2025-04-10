@@ -1,4 +1,4 @@
-from datasets.model_transforms import init_transform_dict
+from datasets.utils.model_transforms import init_transform_dict
 from datasets.data_factory import DataFactory
 import random
 

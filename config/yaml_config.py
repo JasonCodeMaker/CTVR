@@ -61,68 +61,30 @@ class Config:
                 target[key] = value
     
     def _update_from_cmd_args(self):
-        """Update any parameter from command line arguments using dot notation"""
-        # Get all command line arguments
+        """Update specific parameters from command line arguments"""
         parser = argparse.ArgumentParser(add_help=False)
-        args, unknown = parser.parse_known_args()
         
-        # Process unknown arguments which should be in format --key.subkey value
-        override_dict = {}
-        i = 0
-        while i < len(unknown):
-            arg = unknown[i]
-            if arg.startswith('--'):
-                param_name = arg[2:]  # Remove leading --
-                
-                # Check if there's a value after this argument
-                if i + 1 >= len(unknown) or unknown[i + 1].startswith('--'):
-                    # Boolean flag
-                    override_dict[param_name] = True
-                    i += 1
-                else:
-                    # Get the value and attempt type conversion
-                    value = unknown[i + 1]
-                    try:
-                        # Try to convert to int
-                        value = int(value)
-                    except ValueError:
-                        try:
-                            # Try to convert to float
-                            value = float(value)
-                        except ValueError:
-                            # Keep as string if not a number
-                            if value.lower() == 'true':
-                                value = True
-                            elif value.lower() == 'false':
-                                value = False
-                    
-                    override_dict[param_name] = value
-                    i += 2
-            else:
-                i += 1
+        # general parameters
+        parser.add_argument('--eval', action='store_true', default=False, help="Evaluation mode")
+
+        # data parameters
+        parser.add_argument('--dataset_name', type=str, default='MSRVTT', help="Dataset name")
+        parser.add_argument('--videos_dir', type=str, default='datasets/MSRVTT/MSRVTT_Frames', help="Location of videos")
+        parser.add_argument('--task_num', type=int, default=10, help="Number of tasks")
+        parser.add_argument('--path_data', type=str, default='data/MSRVTT_10_dataset.pkl', help="Path to CTVR dataset")
+
+        # experiment parameters
+        parser.add_argument('--exp_name', type=str, default='debug', help="Name of the current experiment")
+        parser.add_argument('--output_dir', type=str, default='./outputs')
+
+        # system parameters
+        parser.add_argument('--seed', type=int, default=42, help='Random seed')
         
-        # Process any non-nested args from original parser
+        args, _ = parser.parse_known_args()
+        
+        # Update config with provided command line args
         for key, value in vars(args).items():
             if value is not None:
-                override_dict[key] = value
-        
-        # Update nested config values using dot notation
-        for key, value in override_dict.items():
-            if '.' in key:
-                # Handle nested parameters
-                keys = key.split('.')
-                current = self.config
-                
-                # Navigate to the innermost dict
-                for k in keys[:-1]:
-                    if k not in current:
-                        current[k] = {}
-                    current = current[k]
-                
-                # Set the value
-                current[keys[-1]] = value
-            else:
-                # Handle top-level parameters
                 self.config[key] = value
     
     def _process_paths(self):

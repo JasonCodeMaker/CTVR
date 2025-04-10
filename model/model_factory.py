@@ -1,8 +1,6 @@
-from config.base_config import BaseConfig
-
 class ModelFactory:
     @staticmethod
-    def get_model(config: BaseConfig):
+    def get_model(config):
         if config.arch == 'avg_pool':
             from model.AvgPool.AvgPool import AvgPool
             return AvgPool(config)

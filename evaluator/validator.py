@@ -182,6 +182,8 @@ class Validator:
         BWF = AverageMeter()
         validation_start_time = time.time()
         total_tasks = len(self.val_loaders_list)
+
+        print("\nFinal Validation Start...")
         with self.experiment.validate():
             with torch.no_grad():
                 for n_task, (val_loader, num_classes) in enumerate(self.val_loaders_list):

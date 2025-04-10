@@ -2,7 +2,7 @@ class MethodFactory:
     @staticmethod
     def get_trainer(config):
         if config.arch == 'frame_fusion_moe':
-            from trainer.trainer_acc_framefusionMoE import Trainer as FrameFusionTrainer
+            from trainer.framefusionMoE import Trainer as FrameFusionTrainer
             return FrameFusionTrainer
         # Add additional methods here as elif branches.
         # elif config.arch == 'other_method':
@@ -14,7 +14,7 @@ class MethodFactory:
     @staticmethod
     def get_evaluator(config):
         if config.arch == 'frame_fusion_moe':
-            from trainer.trainer_acc_framefusionMoE import Evaluator as FrameFusionEvaluator
+            from trainer.framefusionMoE import Evaluator as FrameFusionEvaluator
             return FrameFusionEvaluator
         # Add additional methods here as elif branches.
         # elif config.arch == 'other_method':

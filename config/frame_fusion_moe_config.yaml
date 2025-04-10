@@ -9,7 +9,7 @@ num_frames: 12
 batch_size: 8
 project_name: "1-MSRVTT_10_FrameFusionMoE"
 dataset_name: "MSRVTT"
-videos_dir: "datasets/msrvtt_data/MSRVTT_Frames"
+videos_dir: "datasets/MSRVTT/MSRVTT_Frames"
 benchmark: "cap"
 loss: "triplet"
 grad_acc_steps: 1

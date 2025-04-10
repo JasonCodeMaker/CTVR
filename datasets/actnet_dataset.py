@@ -31,14 +31,14 @@ class ACTNETDataset(Dataset):
                 self.video_to_category[video_id] = category
 
         if self.config.benchmark == 'anet_cap':
-            db_file = 'datasets/ActivityNet/queries.json'
+            db_file = 'datasets/ACTNET/queries.json'
             self.vid2caption = load_json(db_file)
             if split_type == 'train':
                 self._construct_all_train_pairs('anet_cap')
             else:
                 self._construct_all_test_pairs('anet_cap')
         elif self.config.benchmark == 'anet_para':
-            db_file = 'datasets/ActivityNet/queries.json'
+            db_file = 'datasets/ACTNET/queries.json'
             self.vid2caption = load_json(db_file)
             if split_type == 'train':
                 self._construct_all_train_pairs('anet_para')
@@ -46,11 +46,11 @@ class ACTNETDataset(Dataset):
                 self._construct_all_test_pairs('anet_para')  
         elif self.config.benchmark == 'anet_clip':
             if self.split_type == 'train':
-                db_file = 'datasets/ActivityNet/filtered_train_queries_5.json'
+                db_file = 'datasets/ACTNET/filtered_train_queries_5.json'
                 self.vid2caption = load_json(db_file)
                 self._construct_all_train_pairs('anet_clip')
             else:
-                db_file = 'datasets/ActivityNet/filtered_val_queries.json'
+                db_file = 'datasets/ACTNET/filtered_val_queries.json'
                 self.vid2caption = load_json(db_file)
                 self._construct_all_test_pairs('anet_clip')
         else:

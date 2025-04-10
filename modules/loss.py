@@ -1,7 +1,6 @@
 import torch.nn as nn
 import torch
 import torch.nn.functional as F
-from config.base_config import BaseConfig
 
 from .tokenizer import clip_tokenizer
 
@@ -321,7 +320,7 @@ class CLIPLoss_vt_ft(nn.Module):
 
 class LossFactory:
     @staticmethod
-    def get_loss(config: BaseConfig):
+    def get_loss(config):
         if config.loss == 'clip':
             return CLIPLoss()
         elif config.loss == 'clip_vt_ft':

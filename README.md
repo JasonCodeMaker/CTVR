@@ -5,7 +5,7 @@
 
 This repository contains the official implementation of our SIGIR 2025 paper: "[Continual Text-to-Video Retrieval with Frame Fusion and Task-Aware Routing]()".
 
-![FrameFusionMoE Architecture](assets/Architecture.png){width=1300}
+![FrameFusionMoE Architecture](assets/Architecture.png)
 
 ## Table of Contents
 - [Overview](#overview)
@@ -52,7 +52,7 @@ conda create -n framefusionmoe python=3.8
 conda activate framefusionmoe
 
 # Install PyTorch with CUDA
-conda install pytorch==1.10.0 torchvision==0.11.0 cudatoolkit=11.3 -c pytorch
+pip install torch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 --index-url https://download.pytorch.org/whl/cu118
 
 # Install other dependencies
 pip install ftfy regex tqdm opencv-python pandas matplotlib scikit-learn transformers==4.18.0
@@ -67,6 +67,7 @@ pip install ftfy regex tqdm opencv-python pandas matplotlib scikit-learn transfo
 wget https://www.robots.ox.ac.uk/~maxbain/frozen-in-time/data/MSRVTT.zip
 unzip MSRVTT.zip -d datasets/MSRVTT
 
+# Place videos in datasets/MSRVTT/MSRVTT_Videos
 # Process video frames
 python datasets/utils/process_msrvtt.py
 ```
@@ -75,6 +76,7 @@ python datasets/utils/process_msrvtt.py
 
 ```bash
 # Download ActivityNet data from official website
+# save it in datasets/ACTNET
 # http://activity-net.org/download.html
 
 # Place videos in datasets/ACTNET/Activity_Videos
@@ -119,7 +121,7 @@ python main.py \
 
 > **TODO**: This section will be updated with detailed instructions for running the benchmark.
 
-![CTVR Pipeline](assets/BenchmarkOutline.png){width=1000}
+![CTVR Pipeline](assets/BenchmarkOutline.png)
 
 *Illustration of Continual Text-to-Video Retrieval (CTVR) pipeline. A Pre-Trained Model (PTM) continuously adapts to a sequence of TVR tasks through continual learning. Video features extracted in the current task are stored in a database and leveraged for subsequent tasks.*
 
