@@ -3,6 +3,8 @@
 # Evaluation parameters
 eval: false
 eval_path: "outputs/debug"
+eval_task_id: null  # specify the task ID for evaluation
+eval_mode: "single" # "single" or "all"
 
 # Data parameters
 path_data: "data/MSRVTT_10_dataset.pkl"

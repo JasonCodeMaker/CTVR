@@ -26,6 +26,6 @@ openai/clip-vit-base-patch32
 # Ignore specific files
 Autoencoder
 data
-
+checkpoints
 
 datasets_old

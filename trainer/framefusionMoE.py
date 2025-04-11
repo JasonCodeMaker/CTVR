@@ -293,30 +293,42 @@ class Trainer(BaseTrainer):
         
         
 class Evaluator(Trainer):
-    def __init__(self, model, metrics, config, valid_data_loader, tokenizer, 
+    def __init__(self, model, metrics, config, eval_task_id, valid_data_loader, tokenizer, 
                  list_val_acc_ii, experiment=None):
         self.model = model
         self.metrics = metrics
         self.config = config
+        self.task_id = eval_task_id
         self.val_loaders_list = valid_data_loader
         self.tokenizer = tokenizer
         self.list_val_acc_ii = list_val_acc_ii
         self.experiment = experiment
         
-        # Initialize accelerator
+        # Initialize Accelerator
         self.accelerator = Accelerator()
         self.device = self.accelerator.device
         
-        # Prepare model
+        # Prepare the model with Accelerator
         self.model = self.accelerator.prepare(self.model)
         
-        # Initialize other necessary attributes from parent class
         self.window_metric = defaultdict(list)
-        self.checkpoint_dir = config.eval_path
+        self.checkpoint_dir = config.eval_path if hasattr(config, 'eval_path') and config.eval_path else config.model_path
+        
+        # Set up the logging files
+        self.overall_log = os.path.join(self.checkpoint_dir, "overall_log.csv")
+        if not os.path.exists(self.overall_log):
+            from modules.trainer_utils import construct_exp_log
+            construct_exp_log(self.overall_log, num_tasks=20)
+            
+        self.task_log = os.path.join(self.checkpoint_dir, "task_log.csv")
+        if not os.path.exists(self.task_log):
+            from modules.trainer_utils import construct_exp_log
+            construct_exp_log(self.task_log, num_tasks=20)
 
-        # Construct the Validator object for validation 
+        # Initialize the Validator object for validation
         self.validator = Validator(
-            self.model, metrics, config, valid_data_loader, tokenizer, 
+            self.model, metrics, config, self.task_id, valid_data_loader, tokenizer, 
             self.accelerator, experiment, self.checkpoint_dir,
+            self.list_val_acc_ii,  
             self.task_log, self.overall_log
         )

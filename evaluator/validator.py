@@ -9,10 +9,11 @@ from modules.trainer_utils import (
 )
 
 class Validator:
-    def __init__(self, model, metrics, config, val_loaders_list, tokenizer, accelerator, experiment, checkpoint_dir, list_val_acc_ii, task_log, overall_log):
+    def __init__(self, model, metrics, config, task_id, val_loaders_list, tokenizer, accelerator, experiment, checkpoint_dir, list_val_acc_ii, task_log, overall_log):
         self.model = model
         self.metrics = metrics
         self.config = config
+        self.task_id = task_id
         self.val_loaders_list = val_loaders_list
         self.tokenizer = tokenizer
         self.accelerator = accelerator
@@ -44,11 +45,11 @@ class Validator:
         else:
             data['text'] = {key: val.to(self.device) for key, val in data['text'].items()}
         data['video'] = data['video'].to(self.device)
-        text_embed = self.model.forward_text(data['text']['input_ids'], data['text']['attention_mask'], data.get('prototype_id', None))
-        if return_vid:
+        text_embed = self.model.forward_text(data['text']['input_ids'], data['text']['attention_mask'], self.task_id)
+        if return_vid:    
             vid_embed = self.model.forward_video(data['video'])
             return text_embed, vid_embed
-        return text_embed
+        return text_embed          
 
     def task_validation(self, task_id, epoch):
         """Validate on the current task."""
@@ -140,6 +141,8 @@ class Validator:
                 else:
                     text_embeds = torch.cat(text_embed_arr)
 
+                if len(vid_embed_arr) == 0:
+                    raise RuntimeError(f"vid_embed_arr is empty before torch.cat. This likely means no video embeddings were collected for the current task (n_task={n_task}, task_id={task_id}). Check the logic above for populating vid_embed_arr.")
                 curr_vid_embeds = torch.cat(vid_embed_arr)
                 # Remove duplicate video embeddings
                 vid_embeds_per_video_id = {}
@@ -287,25 +290,15 @@ class Validator:
 
     def _duplicate_weights(self):
         """
-        Duplicate weights across experts
+        Duplicate weights across experts (Only for frame_fusion_moe)
         """
         for i in range(len(self.model.clipmodel.text_model.encoder.layers)):
             for proj in ['q', 'k', 'v', 'out']:
-                if self.config.arch == "frame_fusion_lora":
-                    # Get source weights from first expert
-                    source_weights = getattr(self.model.clipmodel.text_model.encoder.layers[i].self_attn, f"{proj}_proj").lora_B0.weight.data
-                    # Copy weights to all other experts
-                    with torch.no_grad():
-                        for j in range(1, self.config.num_experts):
-                            getattr(getattr(self.model.clipmodel.text_model.encoder.layers[i].self_attn, f"{proj}_proj"), f"lora_B{j}").weight.data.copy_(source_weights)
-                elif self.config.arch == "frame_fusion_moe" or self.config.arch == "frame_fusion_moe2":
-                    # Get source weights from first expert
-                    source_weights = getattr(self.model.clipmodel.text_model.encoder.layers[i].self_attn, f"{proj}_lora").lora_Bs[0].weight.data
-                    # Copy weights to all other experts
-                    with torch.no_grad():
-                        for j in range(1, len(getattr(self.model.clipmodel.text_model.encoder.layers[i].self_attn, f"{proj}_lora").lora_Bs)):
-                            getattr(self.model.clipmodel.text_model.encoder.layers[i].self_attn, f"{proj}_lora").lora_Bs[j].weight.data.copy_(source_weights)
-                else:
-                    raise NotImplementedError
+                # Get source weights from first expert
+                source_weights = getattr(self.model.clipmodel.text_model.encoder.layers[i].self_attn, f"{proj}_lora").lora_Bs[0].weight.data
+                # Copy weights to all other experts
+                with torch.no_grad():
+                    for j in range(1, len(getattr(self.model.clipmodel.text_model.encoder.layers[i].self_attn, f"{proj}_lora").lora_Bs)):
+                        getattr(self.model.clipmodel.text_model.encoder.layers[i].self_attn, f"{proj}_lora").lora_Bs[j].weight.data.copy_(source_weights)
 
         print("Successfully duplicated weights from first expert to all other experts")

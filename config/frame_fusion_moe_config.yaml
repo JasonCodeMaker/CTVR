@@ -28,7 +28,7 @@ topk: 2
 
 # Task Prototype specific parameters
 task_num: 10
-task_prototype: false
+task_prototype: True
 
 # Cross-Task Loss specific parameters
 loss_scale: 0.6

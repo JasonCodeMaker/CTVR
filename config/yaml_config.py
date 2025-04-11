@@ -65,24 +65,29 @@ class Config:
         parser = argparse.ArgumentParser(add_help=False)
         
         # general parameters
-        parser.add_argument('--eval', action='store_true', default=False, help="Evaluation mode")
+        parser.add_argument('--eval', action='store_true', help="Evaluation mode")
+        
+        # model parameters
+        parser.add_argument('--eval_path', type=str, help="Path to the checkpoint for evaluation")
+        parser.add_argument('--eval_task_id', type=int, help="Task ID to evaluate")
+        parser.add_argument('--eval_mode', type=str, choices=['single', 'all'], help="Evaluation mode: 'single' or 'all'")
 
         # data parameters
-        parser.add_argument('--dataset_name', type=str, default='MSRVTT', help="Dataset name")
-        parser.add_argument('--videos_dir', type=str, default='datasets/MSRVTT/MSRVTT_Frames', help="Location of videos")
-        parser.add_argument('--task_num', type=int, default=10, help="Number of tasks")
-        parser.add_argument('--path_data', type=str, default='data/MSRVTT_10_dataset.pkl', help="Path to CTVR dataset")
+        parser.add_argument('--dataset_name', type=str, help="Dataset name")
+        parser.add_argument('--videos_dir', type=str, help="Location of videos")
+        parser.add_argument('--task_num', type=int, help="Number of tasks")
+        parser.add_argument('--path_data', type=str, help="Path to CTVR dataset")
 
         # experiment parameters
-        parser.add_argument('--exp_name', type=str, default='debug', help="Name of the current experiment")
-        parser.add_argument('--output_dir', type=str, default='./outputs')
+        parser.add_argument('--exp_name', type=str, help="Name of the current experiment")
+        parser.add_argument('--output_dir', type=str)
 
         # system parameters
-        parser.add_argument('--seed', type=int, default=42, help='Random seed')
+        parser.add_argument('--seed', type=int, help='Random seed')
         
         args, _ = parser.parse_known_args()
         
-        # Update config with provided command line args
+        # Update config with command line arguments
         for key, value in vars(args).items():
             if value is not None:
                 self.config[key] = value
