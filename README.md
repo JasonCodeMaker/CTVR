@@ -97,25 +97,53 @@ Each CTVR setup distributes categories uniformly across tasks:
 
 ## FrameFusionMoE Model
 
-Train and evaluate FrameFusionMoE using the main.py script:
+### Training
+
+To train FrameFusionMoE, use the provided shell script for a one-command setup. For example, to train on MSRVTT with 10 tasks:
 
 ```bash
-# Train FrameFusionMoE on MSRVTT with 10 tasks
-python main.py \
-  --config="configs/framefusion_moe.yaml" \
-  --arch=frame_fusion_moe \
-  --dataset_name msrvtt \
-  --do_train \
-  --num_tasks 10 \
-
-# Train FrameFusionMoE on ActivityNet with 10 tasks
-python main.py \
-  --config="configs/framefusion_moe.yaml" \
-  --arch=frame_fusion_moe \
-  --dataset_name actnet \
-  --do_train \
-  --num_tasks 10 \
+bash scripts/train_framefusionmoe.sh
 ```
+
+You can adjust dataset, data paths, and other parameters by editing `scripts/train_framefusionmoe.sh`.
+
+### Evaluation
+
+FrameFusionMoE supports two evaluation modes:
+
+- **Single-task Evaluation (`--eval_mode="single"`):**  
+  Evaluates the model after learning a specific task, measuring final retrieval performance and catastrophic forgetting.
+
+  To run single-task evaluation:
+
+  ```bash
+  bash scripts/eval_framefusionmoe_single.sh
+  ```
+
+- **Multi-task Evaluation (`--eval_mode="all"`):**  
+  Evaluates the model on all learned tasks, from task 1 to the final task. 
+
+  To run multi-task evaluation:
+
+  ```bash
+  bash scripts/eval_framefusionmoe_multi.sh
+  ```
+
+
+
+For more details and additional dataset/task settings, see the scripts in the `scripts/` directory.
+
+**Key Parameters:**
+- `--config`: Path to the configuration file
+- `--dataset_name`: Dataset name (e.g., MSRVTT, ACTNET)
+- `--path_data`: Path to the continual dataset file
+- `--videos_dir`: Directory containing video frames
+- `--arch`: Model architecture (eg.`frame_fusion_moe`)
+- `--seed`: Random seed for reproducibility
+- `--task_num` / `--eval_task_id`: Task number (e.g., 10 or 20)
+- `--eval_mode`: Evaluation mode ("all" for multi-task, "single" for single-task)
+- `--eval_path`: Path to the trained model checkpoint
+
 
 ## CTVR Benchmark
 

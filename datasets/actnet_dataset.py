@@ -13,8 +13,8 @@ class ACTNETDataset(Dataset):
     """
     def __init__(self, config, data, model, split_type = 'train', img_transforms=None):
         self.config = config
-        self.videos_train_dir = os.join(config.videos_dir, 'train')
-        self.videos_val_dir = os.join(config.videos_dir, 'val')
+        self.videos_train_dir = os.path.join(config.videos_dir, 'train')
+        self.videos_val_dir = os.path.join(config.videos_dir, 'val')
         self.img_transforms = img_transforms
         self.data = data
         self.split_type = split_type
@@ -26,35 +26,44 @@ class ACTNETDataset(Dataset):
         self.video_to_category = {}
         for category, videos in self.data.items():
             for video_id in videos:
-                if self.config.benchmark == 'anet_clip':
-                    video_id = video_id + '_1'
+                video_id = video_id + '_1'
                 self.video_to_category[video_id] = category
 
-        if self.config.benchmark == 'anet_cap':
-            db_file = 'datasets/ACTNET/queries.json'
+        if self.split_type == 'train':
+            db_file = 'datasets/ACTNET/train_queries.json'
             self.vid2caption = load_json(db_file)
-            if split_type == 'train':
-                self._construct_all_train_pairs('anet_cap')
-            else:
-                self._construct_all_test_pairs('anet_cap')
-        elif self.config.benchmark == 'anet_para':
-            db_file = 'datasets/ACTNET/queries.json'
-            self.vid2caption = load_json(db_file)
-            if split_type == 'train':
-                self._construct_all_train_pairs('anet_para')
-            else:
-                self._construct_all_test_pairs('anet_para')  
-        elif self.config.benchmark == 'anet_clip':
-            if self.split_type == 'train':
-                db_file = 'datasets/ACTNET/filtered_train_queries_5.json'
-                self.vid2caption = load_json(db_file)
-                self._construct_all_train_pairs('anet_clip')
-            else:
-                db_file = 'datasets/ACTNET/filtered_val_queries.json'
-                self.vid2caption = load_json(db_file)
-                self._construct_all_test_pairs('anet_clip')
+            self._construct_all_train_pairs('anet_clip')
         else:
-            raise ValueError
+            db_file = 'datasets/ACTNET/val_queries.json'
+            self.vid2caption = load_json(db_file)
+            self._construct_all_test_pairs('anet_clip')
+
+        ## Not used in the current implementation ##
+        # if self.config.benchmark == 'anet_cap':
+        #     db_file = 'datasets/ACTNET/queries.json'
+        #     self.vid2caption = load_json(db_file)
+        #     if split_type == 'train':
+        #         self._construct_all_train_pairs('anet_cap')
+        #     else:
+        #         self._construct_all_test_pairs('anet_cap')
+        # elif self.config.benchmark == 'anet_para':
+        #     db_file = 'datasets/ACTNET/queries.json'
+        #     self.vid2caption = load_json(db_file)
+        #     if split_type == 'train':
+        #         self._construct_all_train_pairs('anet_para')
+        #     else:
+        #         self._construct_all_test_pairs('anet_para')  
+        # elif self.config.benchmark == 'anet_clip':
+        #     if self.split_type == 'train':
+        #         db_file = 'datasets/ACTNET/train_queries.json'
+        #         self.vid2caption = load_json(db_file)
+        #         self._construct_all_train_pairs('anet_clip')
+        #     else:
+        #         db_file = 'datasets/ACTNET/val_queries.json'
+        #         self.vid2caption = load_json(db_file)
+        #         self._construct_all_test_pairs('anet_clip')
+        # else:
+        #     raise ValueError
     
     def __getitem__(self, index):
         if self.split_type == 'train':

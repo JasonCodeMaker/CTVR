@@ -21,7 +21,6 @@ class ConfigFactory:
         # Parse just enough to get the config file or architecture
         parser = argparse.ArgumentParser(add_help=False)
         parser.add_argument('--config', type=str, default='config/frame_fusion_moe_config.yaml' ,help='Path to config file')
-        parser.add_argument('--arch', type=str, default='frame_fusion_moe', help='Architecture name')
         args, _ = parser.parse_known_args()
         
         config_path = None
@@ -30,18 +29,11 @@ class ConfigFactory:
         if args.config and os.path.exists(args.config):
             config_path = args.config
         else:
-            # Otherwise use architecture-specific config
-            arch_config = f"{ConfigFactory.CONFIG_DIR}/{args.arch}_config.yaml"
-            if os.path.exists(arch_config):
-                config_path = arch_config
+            default_config = f"{ConfigFactory.CONFIG_DIR}/{ConfigFactory.DEFAULT_CONFIG}"
+            if os.path.exists(default_config):
+                config_path = default_config
             else:
-                # Fall back to default config
-                default_config = f"{ConfigFactory.CONFIG_DIR}/{ConfigFactory.DEFAULT_CONFIG}"
-                if os.path.exists(default_config):
-                    config_path = default_config
+                raise ValueError("No valid configuration file found. Please specify a valid config file or ensure the default config exists.")
         
-        # Create and return the config object if a valid path was found
-        if config_path:
-            return Config(config_path)
-        else:
-            raise ValueError(f"No configuration file found for architecture '{args.arch}'")
+        # Load the configuration
+        return Config(config_path)

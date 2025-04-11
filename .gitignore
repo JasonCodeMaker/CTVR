@@ -27,5 +27,5 @@ openai/clip-vit-base-patch32
 Autoencoder
 data
 checkpoints
-
+results
 datasets_old

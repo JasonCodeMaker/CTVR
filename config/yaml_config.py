@@ -68,6 +68,7 @@ class Config:
         parser.add_argument('--eval', action='store_true', help="Evaluation mode")
         
         # model parameters
+        parser.add_argument('--arch', type=str, help="Architecture name")
         parser.add_argument('--eval_path', type=str, help="Path to the checkpoint for evaluation")
         parser.add_argument('--eval_task_id', type=int, help="Task ID to evaluate")
         parser.add_argument('--eval_mode', type=str, choices=['single', 'all'], help="Evaluation mode: 'single' or 'all'")

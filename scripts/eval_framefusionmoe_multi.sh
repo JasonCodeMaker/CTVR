@@ -32,7 +32,7 @@ python "main.py" \
 python "main.py" \
     --eval \
     --exp_name="Eval_ACTNET10_Multi" \
-    --config="config/default_config.yaml" \
+    --config="config/frame_fusion_moe_config.yaml" \
     --dataset_name="ACTNET" \
     --path_data="data/ACTNET_10_dataset.pkl" \
     --videos_dir="datasets/ACTNET/Activity_Clip_Frames" \
@@ -46,7 +46,7 @@ python "main.py" \
 python "main.py" \
     --eval \
     --exp_name="Eval_ACTNET20_Multi" \
-    --config="config/default_config.yaml" \
+    --config="config/frame_fusion_moe_config.yaml" \
     --dataset_name="ACTNET" \
     --path_data="data/ACTNET_20_dataset.pkl" \
     --videos_dir="datasets/ACTNET/Activity_Clip_Frames" \
