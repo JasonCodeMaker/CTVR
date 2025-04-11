@@ -90,10 +90,10 @@ Each CTVR setup distributes categories uniformly across tasks:
 
 | Setup | Dataset | #Tasks | Categories per Task |
 |-------|---------|--------|---------------------|
-| MSRVTT-10 | MSRVTT | 10 | 2 |
-| MSRVTT-20 | MSRVTT | 20 | 1 |
-| ACTNET-10 | ActivityNet | 10 | 20 |
-| ACTNET-20 | ActivityNet | 20 | 10 |
+| MSRVTT_10_dataset.pkl | MSRVTT | 10 | 2 |
+| MSRVTT_20_dataset.pkl | MSRVTT | 20 | 1 |
+| ACTNET_10_dataset.pkl | ActivityNet | 10 | 20 |
+| ACTNET_20_dataset.pkl | ActivityNet | 20 | 10 |
 
 ## FrameFusionMoE Model
 
