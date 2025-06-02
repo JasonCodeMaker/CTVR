@@ -271,7 +271,9 @@ class Validator:
         state = {
             'epoch': epoch,
             'state_dict': self.model.state_dict(),
-            'optimizer': self.optimizer.state_dict(),
+            # 'optimizer': self.optimizer.state_dict(),
+            # 'config': self.config, 
+            'task_id': self.task_id,
             'list_val_acc_ii': self.list_val_acc_ii,
         }
 

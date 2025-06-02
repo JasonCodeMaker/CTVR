@@ -64,7 +64,7 @@ class Trainer(BaseTrainer):
 
         # Construct the Validator object for validation 
         self.validator = Validator(
-            self.model, metrics, config, valid_data_loader, tokenizer, 
+            self.model, metrics, config, self.current_task_id, valid_data_loader, tokenizer, 
             self.accelerator, experiment, self.checkpoint_dir, self.list_val_acc_ii,
             self.task_log, self.overall_log
         )
